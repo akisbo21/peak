@@ -4,26 +4,39 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
     const [list, setData] = useState([]);
+    const [offset, setVisibleItems] = useState(20);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/list');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-                const result = await response.json();
-                setData(result);  // Set the data to state
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            const response = await fetch('/api/list');
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
             }
-        };
+            const result = await response.json();
+            setData(result);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    const handleScroll = () => {
+        const bottom = window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight;
+        if (bottom) {
+            setVisibleItems(prev => prev + 20);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     if (loading) {
@@ -52,7 +65,7 @@ export default function Home() {
 
 
 
-                {list.map((row, index) => (
+                {list.slice(0, offset).map((row, index) => (
                     <div
                         key={index}
                         className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
@@ -66,6 +79,10 @@ export default function Home() {
                         <div className="flex-1 text-gray-700 text-sm font-medium">{row.status}</div>
                     </div>
                 ))}
+
+                {offset < list.length && (
+                    <div className="text-center py-4">Loading more...</div>
+                )}
             </div>
         </div>
     </div>
