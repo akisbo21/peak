@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-    // State for data, loading, and error
-    const [data, setData] = useState([]);
+    const [list, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Async function to fetch data
         const fetchData = async () => {
             try {
                 const response = await fetch('/api/list');
@@ -25,19 +23,16 @@ export default function Home() {
             }
         };
 
-        fetchData();  // Call the function inside useEffect
-    }, []);  // Empty dependency array to call it once on component mount
+        fetchData();
+    }, []);
 
-    // Loading state
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    // Error state
     if (error) {
         return <div>Error: {error}</div>;
     }
-
 
     return (
 
@@ -57,7 +52,7 @@ export default function Home() {
 
 
 
-                {data.map((row, index) => (
+                {list.map((row, index) => (
                     <div
                         key={index}
                         className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
