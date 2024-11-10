@@ -2,7 +2,6 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
-import {NextApiRequest, NextApiResponse} from "next";
 
 const API_KEY = "DVY2OISS8SA4WRTO"; // @todo this should be an environment variable.
 let cache = { data: null, expiresAt: null };

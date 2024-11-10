@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from 'next/link'
 
 export default function Home() {
     const [list, setData] = useState([]);
@@ -66,7 +67,7 @@ export default function Home() {
 
 
                 {list.slice(0, offset).map((row, index) => (
-                    <div
+                    <Link href={`/details/${row.symbol}`}
                         key={index}
                         className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
                         <div className="flex-1">
@@ -77,7 +78,7 @@ export default function Home() {
                         <div className="flex-1 text-gray-700 text-sm">{row.assetType}</div>
                         <div className="flex-1 text-gray-700 text-sm">{row.ipoDate}</div>
                         <div className="flex-1 text-gray-700 text-sm font-medium">{row.status}</div>
-                    </div>
+                    </Link>
                 ))}
 
                 {offset < list.length && (
