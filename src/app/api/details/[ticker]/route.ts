@@ -25,8 +25,7 @@ async function fetchData(ticker: string) {
 
         return jsonData;
     } catch (error) {
-        console.error("Error fetching data:", error);
-        throw new Error("Data fetch failed");
+        throw new Error("Data fetch failed", error);
     }
 }
 
@@ -38,6 +37,6 @@ export async function GET(request: Request, { params }: { params: { ticker: stri
         const data = await fetchData(ticker);
         return NextResponse.json(data);
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch data", error }, { status: 500 });
     }
 }

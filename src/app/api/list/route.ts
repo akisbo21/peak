@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-import csv from 'csv-parser';
+import parser from 'csv-parser';
 
 const API_KEY = "DVY2OISS8SA4WRTO"; // @todo this should be an environment variable.
 let cache = { data: null, expiresAt: null };
@@ -28,13 +28,10 @@ async function csvToJson(csv) {
  * Fallback to a local csv because alphavantage gives empty response after a while.
  */
 async function loadLocalData() {
-    return new Promise((resolve, reject) => {
-        const fs = require('fs');
-        const parse = require('csv-parser');
-
+    return new Promise((resolve) => {
         const csvData = [];
         return fs.createReadStream(path.join(process.cwd(), 'src', 'assets', 'listing_status.csv'))
-            .pipe(parse({delimiter: ':'}))
+            .pipe(parser({delimiter: ':'}))
             .on('data', function(row) {
                 csvData.push(row);
             })
@@ -53,7 +50,7 @@ async function fetchData() {
 
     return axios.get('https://www.alphavantage.co/query?function=LISTING_STATUS&datatype=json&apikey=' + API_KEY)
         .then(async function (response) {
-            let csvData = response.data;
+            const csvData = response.data;
             let jsonData;
             // console.log("Csv data from alphavantage api:");
             // console.log(csvData);
