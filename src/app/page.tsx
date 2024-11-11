@@ -27,7 +27,8 @@ export default function Home() {
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
-            const result = await response.json();
+            let result = await response.json();
+            result = result.slice(1); // Slice out header.
             setData(result);
         }
         catch (err) {
