@@ -18,6 +18,8 @@ export default function Home() {
     const [offset, setVisibleItems] = useState(20);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+
 
     const fetchData = async () => {
         try {
@@ -69,6 +71,18 @@ export default function Home() {
     <div id="list-page">
         <div>
             <div className="max-w-4xl mx-auto space-y-4">
+                <input
+                    type="text"
+                    placeholder="Search by symbol"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mt-4 border border-blue-300 p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-500"
+                />
+
+                <div className="text-gray-600 text-sm mb-4">
+                    <b>{list.filter(row => row.symbol.toLowerCase().includes(searchTerm.toLowerCase())).length}</b> results found
+                </div>
+
                 <div className="bg-gray-100 shadow-lg rounded-lg p-6 flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
                     <div className="flex-1">
                         <div className="text-xl font-bold text-gray-900 text-center md:text-left border-b-2 border-gray-300 pb-2">Symbol</div>
@@ -82,7 +96,9 @@ export default function Home() {
 
 
 
-                {list.slice(0, offset).map((row, index) => (
+                { list.filter(row => row.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .slice(0, offset)
+                    .map((row, index) => (
                     <Link href={`/details/${row.symbol}`}
                         key={index}
                         className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4">
