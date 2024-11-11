@@ -3,11 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from 'next/link'
 
+type ListItem = {
+    symbol: string;
+    name: string;
+    exchange: string;
+    assetType: string;
+    ipoDate: string;
+    status: string;
+};
+
+
 export default function Home() {
-    const [list, setData] = useState([]);
+    const [list, setData] = useState<ListItem[]>([]);
     const [offset, setVisibleItems] = useState(20);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchData = async () => {
         try {
@@ -17,9 +27,15 @@ export default function Home() {
             }
             const result = await response.json();
             setData(result);
-        } catch (err) {
-            setError(err.message);
-        } finally {
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        }
+        finally {
             setLoading(false);
         }
     };

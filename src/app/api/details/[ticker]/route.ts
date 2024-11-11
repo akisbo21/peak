@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const API_KEY = process.env.ALPHAVANTAGE_API_KEY || "DVY2OISS8SA4WRTO";
 const ALPHA_ADVANTAGE_LIMIT_ERROR = "Thank you for using Alpha Vantage! Our standard API rate limit is 25 requests per day.";
@@ -25,18 +25,29 @@ async function fetchData(ticker: string) {
 
         return jsonData;
     } catch (error) {
-        throw new Error("Data fetch failed", error);
+        if (error instanceof Error) {
+            throw new Error("Data fetch failed: " + error.message);
+        } else {
+            throw new Error("Data fetch failed with unknown error");
+        }
     }
 }
 
-// api/details/{ticker}
-export async function GET(request: Request, { params }: { params: { ticker: string } }) {
-    const { ticker } = params;
+// api/details/[ticker]
+export async function GET(request: NextRequest) {
+    const ticker = request.nextUrl.pathname.split('/').pop() || '';
+
+    if (!ticker) {
+        return NextResponse.json({ error: 'Ticker not found' }, { status: 400 });
+    }
 
     try {
         const data = await fetchData(ticker);
         return NextResponse.json(data);
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch data", error }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to fetch data',
+            message: (error as Error).message,
+        }, { status: 500 });
     }
 }

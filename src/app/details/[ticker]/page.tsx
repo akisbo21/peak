@@ -6,7 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 export default function DetailsPage() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
+
 
     const pathname = usePathname();
     const router = useRouter();
@@ -26,8 +27,13 @@ export default function DetailsPage() {
                 const result = await response.json();
                 setData(result);
             } catch (err) {
-                setError(err.message);
-            } finally {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unknown error occurred');
+                }
+            }
+            finally {
                 setLoading(false);
             }
         };

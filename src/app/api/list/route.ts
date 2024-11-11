@@ -4,9 +4,15 @@ import path from 'path';
 import parser from 'csv-parser';
 
 const API_KEY = "DVY2OISS8SA4WRTO"; // @todo this should be an environment variable.
-let cache = { data: null, expiresAt: null };
 
-async function csvToJson(csv) {
+interface CacheData {
+    data: unknown | null;
+    expiresAt: number | null;
+}
+
+let cache: CacheData = { data: null, expiresAt: null };
+
+async function csvToJson(csv: string) {
     return csv
         .trim()
         .split('\r\n')
@@ -29,9 +35,9 @@ async function csvToJson(csv) {
  */
 async function loadLocalData() {
     return new Promise((resolve) => {
-        const csvData = [];
+        const csvData: string[] = [];
         return fs.createReadStream(path.join(process.cwd(), 'src', 'assets', 'listing_status.csv'))
-            .pipe(parser({delimiter: ':'}))
+            .pipe(parser({separator: ':'}))
             .on('data', function(row) {
                 csvData.push(row);
             })
@@ -44,7 +50,7 @@ async function loadLocalData() {
 }
 
 async function fetchData() {
-    if (cache.data && cache.expiresAt > Date.now()) {
+    if (cache.data && cache.expiresAt && cache.expiresAt > Date.now()) {
         return cache.data;
     }
 
@@ -72,7 +78,7 @@ async function fetchData() {
             return cache.data;
         })
         .catch(function (error) {
-            console.log(error);
+            throw new Error(error);
         });
 }
 
